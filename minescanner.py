@@ -5,7 +5,6 @@ import sys
 import time
 from queue import Queue
 from threading import Thread
-
 import geoip2.database
 from mcstatus import JavaServer
 
@@ -18,7 +17,6 @@ LOG_DATE_FMT = "%Y/%m/%d %H:%M:%S"
 LOG_FORMAT = "[%(asctime)s] %(message)s"
 
 string_translator = str.maketrans({char: "" for char in BAD_CHARACTERS})
-
 
 def worker(num, q_in, q_out):
     while q_in.qsize() > 0:

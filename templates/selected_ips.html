@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selected IPs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #ffa500;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+
+<div>
+    <canvas id="myChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('myChart').getContext("2d");
+
+    let data = JSON.parse('{{ data | tojson }}');
+    let dates = JSON.parse('{{ dates | tojson }}');
+
+    let chartData = {
+        labels: dates,
+        datasets: []
+    };
+
+    console.log(dates);
+
+    let maxCount = 0;
+
+    for (const [ip, onlinePlayers] of Object.entries(data)) {
+        let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+
+        const currentMax = Math.max(...Object.values(onlinePlayers));
+        if (currentMax > maxCount) {
+            maxCount = currentMax;
+        }
+
+        let dataset = {
+            label: ip,
+            data: Object.values(onlinePlayers),
+            borderColor: color,
+            fill: false
+        };
+
+        chartData.datasets.push(dataset);
+    }
+
+    let chartConfig = {
+        type: 'line',
+        data: chartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Online Players Data',
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: maxCount + 1,
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                }
+            }
+        }
+    };
+
+    new Chart(ctx, chartConfig);
+
+</script>
+</body>
+</html>

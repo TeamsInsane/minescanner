@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft Server Information</title>
+    <style>
+        :root {
+            --background-color-dark: #1f1f1f;
+            --text-color-dark: #ffffff;
+            --header-color-dark: #ffa500;
+            --table-border-color-dark: #333333;
+            --table-row-even-color-dark: #292929;
+            --table-row-hover-color-dark: #3f3f3f;
+
+            --background-color-light: #ffffff;
+            --text-color-light: #000000;
+            --header-color-light: #ffa500;
+            --table-border-color-light: #dddddd;
+            --table-row-even-color-light: #f2f2f2;
+            --table-row-hover-color-light: #e0e0e0;
+        }
+
+        body.dark-theme {
+            background-color: var(--background-color-dark);
+            color: var(--text-color-dark);
+        }
+
+        body.light-theme {
+            background-color: var(--background-color-light);
+            color: var(--text-color-light);
+        }
+
+        h1 {
+            color: var(--header-color-dark);
+            text-align: center;
+            padding: 20px;
+            font-size: 36px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        body.light-theme h1 {
+            color: var(--header-color-light);
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            color: inherit;
+        }
+
+        th, td {
+            border: 1px solid var(--table-border-color-dark);
+            text-align: left;
+            padding: 12px;
+        }
+
+        body.light-theme th, body.light-theme td {
+            border: 1px solid var(--table-border-color-light);
+        }
+
+        th {
+            background-color: var(--table-border-color-dark);
+        }
+
+        body.light-theme th {
+            background-color: var(--table-border-color-light);
+        }
+
+        tr:nth-child(even) {
+            background-color: var(--table-row-even-color-dark);
+        }
+
+        body.light-theme tr:nth-child(even) {
+            background-color: var(--table-row-even-color-light);
+        }
+
+        tr:hover {
+            background-color: var(--table-row-hover-color-dark);
+        }
+
+        body.light-theme tr:hover {
+            background-color: var(--table-row-hover-color-light);
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #ffa500;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #ff7b00;
+        }
+
+        .toggle-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #333;
+        }
+
+        .sort-buttons {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .sort-button {
+            display: block;
+            margin: 0 10px;
+        }
+
+        .submit-button {
+            margin-bottom: 10px;
+            background-color: #ff3c00;
+        }
+
+        .checkbox-cell {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleTheme() {
+            let body = document.body;
+            if (body.classList.contains('dark-theme')) {
+                body.classList.remove('dark-theme');
+                body.classList.add('light-theme');
+            } else {
+                body.classList.remove('light-theme');
+                body.classList.add('dark-theme');
+            }
+        }
+
+        function sortTableByPlayerCount() {
+            let table = document.getElementById("serverTable");
+            let rows = Array.from(table.rows).slice(1);
+            rows.sort((a, b) => {
+                let countA = parseInt(a.cells[4].innerText);
+                let countB = parseInt(b.cells[4].innerText);
+                return countB - countA;
+            });
+            rows.forEach(row => table.appendChild(row));
+        }
+
+        function sortTableByPing() {
+            let table = document.getElementById("serverTable");
+            let rows = Array.from(table.rows).slice(1);
+            rows.sort((a, b) => {
+                let pingA = parseInt(a.cells[5].innerText);
+                let pingB = parseInt(b.cells[5].innerText);
+                return pingA - pingB;
+            });
+            rows.forEach(row => table.appendChild(row));
+        }
+
+        function limitCheckboxSelection() {
+            let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    let checkedCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+                    if (checkedCount > 5) {
+                        this.checked = false;
+                        alert("You can only select up to 5 IPs.");
+                    }
+                });
+            });
+        }
+
+        function toggleCheckboxes() {
+            let checkboxes = document.querySelectorAll('.checkbox-cell');
+            checkboxes.forEach(cell => {
+                if (cell.style.display === 'none' || cell.style.display === '') {
+                    cell.style.display = 'table-cell';
+                } else {
+                    cell.style.display = 'none';
+                }
+            });
+
+            let checkboxHeaders = document.querySelectorAll('.checkbox-header');
+            checkboxHeaders.forEach(header => {
+                if (header.style.display === 'none' || header.style.display === '') {
+                    header.style.display = 'table-cell';
+                } else {
+                    header.style.display = 'none';
+                }
+            });
+
+            let submitButton = document.querySelector('.submit-button');
+            if (submitButton.style.display === 'none' || submitButton.style.display === '') {
+                submitButton.style.display = 'block';
+            } else {
+                submitButton.style.display = 'none';
+            }
+        }
+
+        window.onload = limitCheckboxSelection;
+    </script>
+</head>
+<body class="dark-theme">
+    <h1>Slovenski Minecraft Strežniki</h1>
+    <button class="toggle-button" onclick="toggleTheme()">Toggle Theme</button>
+    <div class="sort-buttons">
+        <button class="sort-button" onclick="sortTableByPlayerCount()">Sort by Player Count</button>
+        <button class="sort-button" onclick="sortTableByPing()">Sort by Ping</button>
+        <button class="sort-button" onclick="toggleCheckboxes()">Select IPs</button>
+        </div>
+    <form action="/selected_ips" method="POST">
+        <div class="sort-buttons">
+            <button type="submit" class="submit-button" style="display: none;">Submit Selected IPs</button>
+        </div>
+        <table id="serverTable">
+            <thead>
+                <tr>
+                    <th class="checkbox-header" style="display: none;">Select</th>
+                    <th>IP</th>
+                    <th>DNS Name</th>
+                    <th>Version</th>
+                    <th>Online</th>
+                    <th>Ping</th>
+                    <th>MOTD</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for server in server_info %}
+                <tr>
+                    <td class="checkbox-cell" style="display: none;"><input type="checkbox" name="selected_ips" value="{{ server.ip }}"></td>
+                    <td>{{ server.ip }}</td>
+                    <td>{{ server.dns_name }}</td>
+                    <td>{{ server.version }}</td>
+                    <td>{{ server.online }}</td>
+                    <td>{{ server.ping }}</td>
+                    <td>{{ server.motd }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+</body>
+</html>
