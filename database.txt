@@ -1,0 +1,17 @@
+create database MinecraftServers;
+
+create table ServerInformation(
+    IP VARCHAR(25) PRIMARY KEY,
+    dns VARCHAR(50),
+    port INT not null
+
+);
+
+create table ServerStatus(
+    IP VARCHAR(25) NOT NULL,
+    version VARCHAR(20) NOT NULL,
+    online INT NOT NULL,
+    MOTD VARCHAR(100) NOT NULL,
+    timestamp DATETIME NOT NULL,
+    FOREIGN KEY(IP) REFERENCES ServerInformation(IP)
+);
